@@ -1,0 +1,18 @@
+<div class="body">
+    <div class="login">
+      <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="input-container">
+          <input
+            type="text"
+            name="email"
+            placeholder="Enter email"
+            formControlName="email"
+          />
+          <app-showerror [form]="form" [controlname]="'email'" />
+        </div>
+        <button>Submit</button>
+          <a class="nav-link" [routerLink]="['../login']">Already have an account</a>
+      </form>
+    </div>
+  </div>
+  
