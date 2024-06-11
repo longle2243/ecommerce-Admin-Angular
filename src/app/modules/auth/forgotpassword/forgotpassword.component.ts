@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth.service';
 
 @Component({
-  selector: 'app-forgot',
-  templateUrl: './forgot.component.html',
-  styleUrl: './forgot.component.scss',
+  selector: 'app-forgotpassword',
+  templateUrl: './forgotpassword.component.html',
+  styleUrl: './forgotpassword.component.scss',
 })
-export class ForgotComponent {
+export class ForgotpasswordComponent {
   form: FormGroup;
 
   constructor(
@@ -25,9 +25,11 @@ export class ForgotComponent {
   onSubmit() {
     this.form.markAllAsTouched();
     if (this.form.valid) {
-      this.authService.forgot(this.form.controls['email'].value).subscribe((res) => {
-        console.log(res);
-      });
+      this.authService
+        .forgotPassword(this.form.controls['email'].value)
+        .subscribe((res) => {
+          console.log(res);
+        });
     }
   }
 }

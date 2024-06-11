@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { AuthService } from '@app/services/auth.service';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { requestInterceptor } from './request.interceptor';
+import { Router } from '@angular/router';
 
 export const responseInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
@@ -21,12 +22,13 @@ export const responseInterceptor: HttpInterceptorFn = (req, next) => {
 
 export const handleTokenExpired: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+
   return authService.resfreshToken().pipe(
     switchMap(() => {
       return requestInterceptor(req, next);
     }),
     catchError((error) => {
-      console.error('Error handling expired access token:', error);
+      authService.logout();
       return throwError(() => error);
     })
   );
