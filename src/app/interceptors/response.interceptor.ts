@@ -1,78 +1,61 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { getAccessToken } from '@app/functions/token-storage.function';
 import { AuthService } from '@app/services/auth.service';
-import { catchError, switchMap, throwError } from 'rxjs';
-import { requestInterceptor } from './request.interceptor';
-import { TokenstorageService } from '@app/services/tokenstorage.service';
+import { Observable, catchError, switchMap, throwError } from 'rxjs';
 
-export const responseInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  const tokenstorage = inject(TokenstorageService);
+@Injectable()
+export class responseInterceptor implements HttpInterceptor {
+  constructor(private authService: AuthService) {}
 
-  return next(req).pipe(
-    catchError((error: HttpErrorResponse) => {
-      if (error) {
-        switch (error.status) {
-          case 401:
-            console.log('401');
-            // handleTokenExpired(req, next);
-            // authService.resfreshToken().pipe(
-            //   switchMap((newToken) => {
-            //     console.log(newToken);
-            //     return next(
-            //       req.clone({
-            //         setHeaders: {
-            //           Authorization: 'Bearer ' + tokenstorage.getAccessToken(),
-            //         },
-            //       })
-            //     );
-            //   }),
-            //   catchError((error) => {
-            //     console.log('error');
-            //     if (error.status == '403' || error.status === '401') {
-            //       authService.logout();
-            //     }
-            //     return throwError(() => error);
-            //   })
-            // );
-            authService.resfreshToken().subscribe({
-              next: () => {
-                next(
-                  req.clone({
-                    setHeaders: {
-                      Authorization: 'Bearer ' + tokenstorage.getAccessToken(),
-                    },
-                  })
-                );
-              },
-              error: catchError((error) => {
-                if (error.status == '403' || error.status === '401') {
-                  authService.logout();
-                }
-                return throwError(() => error);
-              }),
-            });
-            break;
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (accessToken) {
+      req = this.addToken(req, accessToken);
+    }
+    return next.handle(req).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error) {
+          switch (error.status) {
+            case 401:
+              this.handleTokenExpired(req, next);
+          }
         }
-      }
-      return throwError(() => error);
-    })
-  );
-};
+        return throwError(() => error);
+      })
+    );
+  }
 
-export const handleTokenExpired: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
+  private addToken(request: HttpRequest<any>, token: string): HttpRequest<any> {
+    return request.clone({
+      setHeaders: {
+        Authorization: 'Bearer ' + token,
+      },
+    });
+  }
 
-  return authService.resfreshToken().pipe(
-    switchMap(() => {
-      console.log('switch');
-
-      // return requestInterceptor(req, next);
-      return next(req);
-    }),
-    catchError((error) => {
-      authService.logout();
-      return throwError(() => error);
-    })
-  );
-};
+  private handleTokenExpired(
+    request: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
+    return this.authService.resfreshToken().pipe(
+      switchMap(() => {
+        const newAccessToken = getAccessToken();
+        return next.handle(this.addToken(request, newAccessToken!));
+      }),
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+}

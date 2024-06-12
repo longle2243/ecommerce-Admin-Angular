@@ -10,15 +10,11 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { HeaderComponent } from './layout/header/header.component';
-import { requestInterceptor } from './interceptors/request.interceptor';
-import {
-  handleTokenExpired,
-  responseInterceptor,
-} from './interceptors/response.interceptor';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { FooterComponent } from './layout/footer/footer.component';
 import { handleErrorInterceptor } from './interceptors/handle-error.interceptor';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { JWT_OPTIONS, JwtHelperService } from '@auth0/angular-jwt';
 
 @NgModule({
   declarations: [
@@ -30,16 +26,16 @@ import { authInterceptor } from './interceptors/auth.interceptor';
   imports: [BrowserModule, AppRoutingModule],
   providers: [
     importProvidersFrom(HttpClientModule),
-    // provideHttpClient(
-      // withInterceptors([authInterceptor])
-      // withInterceptors([requestInterceptor, responseInterceptor])
-      // withInterceptors([requestInterceptor, responseInterceptor, handleTokenExpired])
-    // ),
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: handleErrorInterceptor,
-      multi: true,
-    },
+    provideHttpClient(
+      withInterceptors([authInterceptor, handleErrorInterceptor])
+    ),
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: requestInterceptor,
+    //   multi: true,
+    // },
+    JwtHelperService,
+    { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
   ],
   bootstrap: [AppComponent],
 })
