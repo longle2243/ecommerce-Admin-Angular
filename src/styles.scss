@@ -1,1 +1,51 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+    margin: 0;
+}
+
+.wrapper {
+    display: grid;
+    grid-gap: 1px;
+    grid-template-columns: 1fr 2fr 2fr;
+    grid-template-areas:
+        "header header header"
+        "sidebar content content"
+        "footer  footer  footer";
+    background-color: #fff;
+    color: #444;
+}
+
+.sidebar {
+    grid-area: sidebar;
+}
+
+.content {
+    grid-area: content;
+}
+
+.header {
+    grid-area: header;
+}
+
+.footer {
+    grid-area: footer;
+}
+
+
+.box {
+    // background-color: grey;
+    // color: #fff;
+}
+
+.header {
+    background: linear-gradient(#5F00D8, #B200F1);
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.sidebar{
+    background-color: whitesmoke;
+}
+
+.content{
+    min-height: 500px;
+}

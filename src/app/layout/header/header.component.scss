@@ -1,0 +1,24 @@
+header {
+    padding: 10px;
+}
+
+.nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    max-height: 30px;
+    color: white;
+}
+
+.workspace{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 150px;
+}
+
+.icon {
+    width: 30px;
+}

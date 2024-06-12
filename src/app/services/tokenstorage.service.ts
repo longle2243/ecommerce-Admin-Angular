@@ -19,8 +19,10 @@ export class TokenstorageService {
   }
 
   setToken(token: Token) {
-    localStorage.setItem(this.storageKeyAccessToken, token.data.accessToken);
-    localStorage.setItem(this.storageKeyRefreshToken, token.data.refreshToken);
+    console.log("seted");
+    
+    localStorage.setItem(this.storageKeyAccessToken, token.accessToken);
+    localStorage.setItem(this.storageKeyRefreshToken, token.refreshToken);
   }
 
   removeToken() {

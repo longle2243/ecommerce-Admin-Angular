@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@app/services/auth.service';
 
 @Component({
@@ -10,11 +10,13 @@ import { AuthService } from '@app/services/auth.service';
 })
 export class ForgotpasswordComponent {
   form: FormGroup;
+  resetToken?: string;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private activateRoute: ActivatedRoute
   ) {
     this.form = this.fb.group({
       email: ['administrator@mailinator.com', [Validators.required]],
@@ -28,7 +30,10 @@ export class ForgotpasswordComponent {
       this.authService
         .forgotPassword(this.form.controls['email'].value)
         .subscribe((res) => {
-          console.log(res);
+          console.log(res.data.resetPasswordToken);
+          this.router.navigate(['resetPassword'], {
+            queryParams: { resetToken: res.data.resetPasswordToken },
+          });
         });
     }
   }

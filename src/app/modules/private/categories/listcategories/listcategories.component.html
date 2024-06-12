@@ -1,1 +1,33 @@
-<p>listcategories works!</p>
+<div class="flexrow body">
+  <div  class="flexcolumn">
+    <h5>Categories Management</h5>
+    <div>
+      <input type="text" placeholder="filter" />
+      <input type="text" placeholder="search" />
+    </div>
+  </div>
+
+  <div>
+    <table>
+      <tr class="titletable">
+        <th>#</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th >Image link</th>
+        <th>createdAt</th>
+        <th>UpdateAt</th>
+        <th>Action</th>
+      </tr>
+      <tr *ngFor="let category of categories; let i = index">
+        <td>{{ i }}</td>
+        <td>{{ category.name }}</td>
+        <td>{{ category.description }}</td>
+        <td>link</td>
+        <td>{{ category.createdAt }}</td>
+        <td>{{ category.updatedAt }}</td>
+        <td><a>Delete</a></td>
+      </tr>
+    </table>
+    
+  </div>
+</div>

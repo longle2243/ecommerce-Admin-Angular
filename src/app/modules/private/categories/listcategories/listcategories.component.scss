@@ -1,0 +1,51 @@
+.body {
+    padding: 20px;
+}
+
+.flexrow {
+    display: flex;
+    flex-direction: column;
+}
+
+.flexcolumn {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+tr {
+    background-color: bisque;
+}
+
+th {
+    background-color: #2F1160;
+    color: white;
+}
+
+td {
+    border-bottom: 1px solid #ddd;
+    color: #2F1160;
+}
+
+tr:hover {
+    background-color: coral;
+}
+
+.imglink {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.titletable {
+    background-color: black;
+    color: white;
+    height: 50xp;
+}

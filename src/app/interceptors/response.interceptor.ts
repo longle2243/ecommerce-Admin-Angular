@@ -3,15 +3,55 @@ import { inject } from '@angular/core';
 import { AuthService } from '@app/services/auth.service';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { requestInterceptor } from './request.interceptor';
-import { Router } from '@angular/router';
+import { TokenstorageService } from '@app/services/tokenstorage.service';
 
 export const responseInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const tokenstorage = inject(TokenstorageService);
+
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error) {
         switch (error.status) {
           case 401:
-            handleTokenExpired(req, next);
+            console.log('401');
+            // handleTokenExpired(req, next);
+            // authService.resfreshToken().pipe(
+            //   switchMap((newToken) => {
+            //     console.log(newToken);
+            //     return next(
+            //       req.clone({
+            //         setHeaders: {
+            //           Authorization: 'Bearer ' + tokenstorage.getAccessToken(),
+            //         },
+            //       })
+            //     );
+            //   }),
+            //   catchError((error) => {
+            //     console.log('error');
+            //     if (error.status == '403' || error.status === '401') {
+            //       authService.logout();
+            //     }
+            //     return throwError(() => error);
+            //   })
+            // );
+            authService.resfreshToken().subscribe({
+              next: () => {
+                next(
+                  req.clone({
+                    setHeaders: {
+                      Authorization: 'Bearer ' + tokenstorage.getAccessToken(),
+                    },
+                  })
+                );
+              },
+              error: catchError((error) => {
+                if (error.status == '403' || error.status === '401') {
+                  authService.logout();
+                }
+                return throwError(() => error);
+              }),
+            });
             break;
         }
       }
@@ -25,7 +65,10 @@ export const handleTokenExpired: HttpInterceptorFn = (req, next) => {
 
   return authService.resfreshToken().pipe(
     switchMap(() => {
-      return requestInterceptor(req, next);
+      console.log('switch');
+
+      // return requestInterceptor(req, next);
+      return next(req);
     }),
     catchError((error) => {
       authService.logout();
